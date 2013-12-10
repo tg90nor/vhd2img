@@ -84,20 +84,20 @@ static int verbose = 1;
 
 struct VHD_footer {
     char cookie[8];
-    unsigned long features;
-    unsigned long version;
+    unsigned int features;
+    unsigned int version;
     unsigned long long dataOffset;
-    unsigned long timeStamp;
+    unsigned int timeStamp;
     char creatorApplication[4];
-    unsigned long creatorVersion;
+    unsigned int creatorVersion;
     char creatorOS[4];
     unsigned long long originalSize;
     unsigned long long currentSize;
     unsigned short cylinders;
     unsigned char heads;
     unsigned char sectors;
-    unsigned long diskType;
-    unsigned long checksum;
+    unsigned int diskType;
+    unsigned int checksum;
     unsigned char uniqueId[16];
     unsigned char savedState;
     unsigned char padding[427];
@@ -107,19 +107,19 @@ struct VHD_dynamic {
     char cookie[8];
     unsigned long long dataOffset;
     unsigned long long tableOffset;
-    unsigned long headerVersion;
-    unsigned long maxTableEntries;
-    unsigned long blockSize;
-    unsigned long checksum;
+    unsigned int headerVersion;
+    unsigned int maxTableEntries;
+    unsigned int blockSize;
+    unsigned int checksum;
     unsigned char parentUniqueId[16];
-    unsigned long parentTimeStamp;
-    unsigned long reserved1;
+    unsigned int parentTimeStamp;
+    unsigned int reserved1;
     unsigned char parentUnicodeName[512];
     struct {
 	unsigned char platformCode[4];
-	unsigned long platformDataSpace;
-	unsigned long platformDataLength;
-	unsigned long reserved;
+	unsigned int platformDataSpace;
+	unsigned int platformDataLength;
+	unsigned int reserved;
 	unsigned long long platformDataOffset;
     } __attribute__((__packed__)) partentLocator[8];
     unsigned char reserved2[256];
@@ -303,8 +303,8 @@ int main( int argc, char **argv)
 	exit(1);
     }
     
-    unsigned long bats = ntohl( dynamic.maxTableEntries);
-    unsigned long *bat = calloc( sizeof(*bat) , bats);
+    unsigned int bats = ntohl( dynamic.maxTableEntries);
+    unsigned int *bat = calloc( sizeof(*bat) , bats);
     if ( fread( bat, sizeof(*bat), bats, in) != bats) {
 	fprintf(stderr,"Failed to read block allocation table: %s\n", strerror(errno));
 	exit(1);
@@ -321,9 +321,9 @@ int main( int argc, char **argv)
     }
 
     unsigned int b;
-    unsigned long emptySectors = 0;
-    unsigned long usedSectors = 0;
-    unsigned long usedZeroes = 0;
+    unsigned int emptySectors = 0;
+    unsigned int usedSectors = 0;
+    unsigned int usedZeroes = 0;
     char buf[512];
 
     for ( b = 0; b < bats; b++) {
@@ -381,7 +381,7 @@ int main( int argc, char **argv)
 		    unsigned long long pos = (b*sectorsPerBlock + s) * 512LL;
 		    if ( pos != opos) {
 			if ( fseeko( out, pos, SEEK_SET) != 0) {
-			    fprintf(stderr,"Failed to seek output file for sector %lld (block %d of %lu,sector %d of %d): %s\n", 
+			    fprintf(stderr,"Failed to seek output file for sector %lld (block %d of %u,sector %d of %d): %s\n", 
 				    (b*sectorsPerBlock + s) * 512LL, b,bats,s,sectorsPerBlock,
 				    strerror(errno));
 			    exit(1);
